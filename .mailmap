@@ -1,0 +1,10 @@
+# This file lists the canonical name and email of contributors, and is used to
+# generate AUTHORS (in hack/generate-authors.sh).
+#
+# To find new duplicates, regenerate AUTHORS and scan for name duplicates, or
+# run the following to find email duplicates:
+#   git log --format='%aE - %aN' | sort -uf | awk -v IGNORECASE=1 '$1 in a {print a[$1]; print}; {a[$1]=$0}'
+#
+# For an explanation of this file format, consult gitmailmap(5).
+
+Josphat Kahihia <josphatkahihia@gmail.com> Josphat Kahihia <josphatkahihia@gmail.com>
