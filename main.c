@@ -1,38 +1,69 @@
-#include "general.h"
-#include "shell.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#define BUFFER_SIZE 1024
+#define PROMPT "#cisfun$ "
 
 /**
- * main - Entry point for the shell program
+ * main - Entry point of the simple shell
  *
- * @argc: Number of input arguments
- * @argv: Array of input arguments
- *
- * Return: 0 if successful, 1 if an error occurs
+ * Return: 0 on success, 1 on error
  */
-int main(int argc, char **argv)
+int main(void)
 {
-    general_t *shell_info;
-    int exit_code;
+    char *line = NULL;
+    char *args[2];
+    size_t len = 0;
+    ssize_t read;
+    pid_t pid;
+    int status;
 
-    shell_info = malloc(sizeof(general_t));
-    if (shell_info == NULL)
+    while (1)
     {
-        perror(argv[0]);
-        exit(EXIT_FAILURE);
+        printf(PROMPT);  /* Display the prompt */
+        read = getline(&line, &len, stdin);  /* Get user input */
+
+        if (read == -1)  /* Handle EOF (Ctrl+D) */
+        {
+            printf("\n");
+            break;
+        }
+
+        line[read - 1] = '\0';  /* Remove newline character */
+
+        if (strcmp(line, "") == 0)  /* Skip empty input */
+            continue;
+
+        args[0] = line;  /* Command */
+        args[1] = NULL;  /* No arguments */
+
+        pid = fork();  /* Fork a child process */
+
+        if (pid == -1)  /* Error forking */
+        {
+            perror("fork");
+            free(line);
+            exit(1);
+        }
+        else if (pid == 0)  /* Child process */
+        {
+            if (execve(args[0], args, NULL) == -1)  /* Execute command */
+            {
+                perror("./shell");
+                exit(1);
+            }
+        }
+        else  /* Parent process */
+        {
+            wait(&status);  /* Wait for child process to finish */
+        }
     }
 
-    shell_info->pid = getpid();
-    shell_info->status_code = 0;
-    shell_info->n_commands = 0;
-    shell_info->argc = argc;
-    shell_info->argv = argv;
-    shell_info->mode = isatty(STDIN_FILENO) ? INTERACTIVE : NON_INTERACTIVE;
-    
-    start(shell_info);
-
-    exit_code = shell_info->status_code;
-
-    free(shell_info);
-
-    return (exit_code);
+    free(line);  /* Free allocated memory */
+    return 0;
 }
+
