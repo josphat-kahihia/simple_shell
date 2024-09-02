@@ -1,69 +1,48 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
-#define BUFFER_SIZE 1024
-#define PROMPT "#cisfun$ "
+#include "shell.h"
 
 /**
- * main - Entry point of the simple shell
- *
- * Return: 0 on success, 1 on error
+ * main - Entry point of the shell program.
+ * @argc: Argument count.
+ * @argv: Argument vector.
+ * Return: Always 0.
  */
-int main(void)
+int main(int argc, char *argv[])
 {
-    char *line = NULL;
-    char *args[2];
+    char *input = NULL;
     size_t len = 0;
     ssize_t read;
-    pid_t pid;
-    int status;
+
+    (void)argc; /* unused */
+    (void)argv; /* unused */
 
     while (1)
     {
-        printf(PROMPT);  /* Display the prompt */
-        read = getline(&line, &len, stdin);  /* Get user input */
+        /* Display prompt */
+        write(STDOUT_FILENO, "$ ", 2);
 
-        if (read == -1)  /* Handle EOF (Ctrl+D) */
+        /* Get user input */
+        read = getline(&input, &len, stdin);
+        if (read == -1)
         {
-            printf("\n");
-            break;
-        }
-
-        line[read - 1] = '\0';  /* Remove newline character */
-
-        if (strcmp(line, "") == 0)  /* Skip empty input */
-            continue;
-
-        args[0] = line;  /* Command */
-        args[1] = NULL;  /* No arguments */
-
-        pid = fork();  /* Fork a child process */
-
-        if (pid == -1)  /* Error forking */
-        {
-            perror("fork");
-            free(line);
-            exit(1);
-        }
-        else if (pid == 0)  /* Child process */
-        {
-            if (execve(args[0], args, NULL) == -1)  /* Execute command */
+            if (feof(stdin))
             {
-                perror("./shell");
-                exit(1);
+                free(input);
+                exit(EXIT_SUCCESS);
             }
+            perror("getline");
+            exit(EXIT_FAILURE);
         }
-        else  /* Parent process */
+
+        /* Remove newline character */
+        if (input[read - 1] == '\n')
         {
-            wait(&status);  /* Wait for child process to finish */
+            input[read - 1] = '\0';
         }
+
+        /* Execute command */
+        execute_command(input);
     }
 
-    free(line);  /* Free allocated memory */
-    return 0;
+    return (EXIT_SUCCESS);
 }
 
