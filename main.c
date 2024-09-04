@@ -7,9 +7,9 @@ int main(void)
     char *line = NULL;
     size_t len = 0;
 
-    while (1) // Infinite loop to keep the shell running
+    while (1) /* Infinite loop to keep the shell running */
     {
-        printf("$ "); // Display the prompt
+        printf("$ "); /* Display the prompt */
         if (getline(&line, &len, stdin) == -1)
         {
             perror("getline");
@@ -17,10 +17,9 @@ int main(void)
             exit(EXIT_FAILURE);
         }
 
-        printf("You entered: %s", line); // Just print what was entered for now
+        printf("You entered: %s", line); /* Just print what was entered for now */
     }
 
-    free(line); // Free the allocated memory
+    free(line); /* Free the allocated memory */
     return 0;
 }
-
