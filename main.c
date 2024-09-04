@@ -1,22 +1,26 @@
-#include "shell.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-int main(int argc, char **argv)
+int main(void)
 {
-    if (argc == 1)
+    char *line = NULL;
+    size_t len = 0;
+
+    while (1) // Infinite loop to keep the shell running
     {
-        /* Interactive mode */
-        shell_loop();
+        printf("$ "); // Display the prompt
+        if (getline(&line, &len, stdin) == -1)
+        {
+            perror("getline");
+            free(line);
+            exit(EXIT_FAILURE);
+        }
+
+        printf("You entered: %s", line); // Just print what was entered for now
     }
-    else if (argc == 2)
-    {
-        /* Non-interactive mode */
-        execute_script(argv[1]);
-    }
-    else
-    {
-        fprintf(stderr, "Usage: %s [script]\n", argv[0]);
-        exit(EXIT_FAILURE);
-    }
-    return (0);
+
+    free(line); // Free the allocated memory
+    return 0;
 }
 
