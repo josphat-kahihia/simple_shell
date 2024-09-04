@@ -1,0 +1,51 @@
+.TH SIMPLE_SHELL 1 "September 2024" "v0.1" "Simple Shell Manual"
+.SH NAME
+simple_shell \- a simple UNIX command line interpreter
+.SH SYNOPSIS
+.B simple_shell
+.RB [\| options \|]
+.SH DESCRIPTION
+.B simple_shell
+is a simple UNIX command line interpreter that replicates basic functionalities of a traditional shell.
+
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Display this help message and exit.
+
+.SH USAGE
+The shell can be used in two modes:
+
+.TP
+.B Interactive Mode
+In this mode, the shell displays a prompt and waits for the user to type a command, which it then executes.
+
+.TP
+.B Non-Interactive Mode
+In this mode, the shell reads and executes a command from a file or a pipeline.
+
+.SH EXAMPLES
+.TP
+.B Interactive Mode:
+.RS
+$ ./hsh
+$ ls -l
+$ exit
+.RE
+
+.TP
+.B Non-Interactive Mode:
+.RS
+$ echo "ls -l" | ./hsh
+.RE
+
+.SH AUTHOR
+Written by Your Name.
+
+.SH BUGS
+No known bugs.
+
+.SH SEE ALSO
+.BR sh (1),
+.BR bash (1)
+
