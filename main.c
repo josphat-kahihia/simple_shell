@@ -2,22 +2,48 @@
 
 /**
  * main - init, run and control the shell
+ * @line: Placeholder var for _getline to work correctly
+ * @gr: _getline's return value
+ * @n: The bytes specifier for _getline
  *
  * Description: The main function first initialises the variables 'centres'
  * required to run the shell, then checks the mode of execution, and handles
  * operation based on that mode. It should never get to its own return value.
  * That signifies an error that should be checked. However, because GCC-alx
  * requires it, we'll set it to return to zero. In the current state, it should
- * actually get to return.
+ * NOT get to return. (updated).
  *
- * Return: 0 on success.
+ * Return: 0 on success, -1 on failure.
  */
 int main(void)
 {
 	commands_centre *cmd_main;
+	char *line;
+	ssize_t gr;
+	size_t n;
 
 	cmd_main = init_commands_centre();
 	if (cmd_main == NULL)
 		return (-1);
+	line = NULL;
+	cmd_main->cl = &line;
+	n = 0;
+	prompt(NULL);
+	gr = _getline(cmd_main->cl, &n, cmd_main->fd);
+	while (gr || *cmd_main->cl)
+	{
+		if (_strlen(*cmd_main->cl) == 0)
+		{
+			write(STDOUT_FILENO, "\n", 2);
+			exit(0); /* EOF encountered */
+		}
+		printf("Input string: start->|%s|<-end\n", *cmd_main->cl);
+		/* extract_commands(cmd_main); execute_commands(cmd_main)*/
+		*cmd_main->cl = NULL; /* reset for EOF logic to work */
+		prompt(NULL);
+		gr = _getline(cmd_main->cl, &n, cmd_main->fd);
+	}
+	if (gr < 0 && !(*cmd_main->cl))
+		exit(-1); /* Problem with read or the function itself */
 	return (0);
 }
