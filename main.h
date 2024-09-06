@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h> /* For debugging printfs. Will remove later */
 #include <unistd.h>
+#include <string.h> /* For strtok, will remove later */
 
 /**
  * struct command_string - a typedef'd struct for holding a single command.
@@ -81,12 +82,13 @@ typedef struct commands_centre
  * ---- input.c ----
  * @_getline() - input.c | status: finished
  * @prompt() - input.c | status: finished
+ * @get_input() - input.c | status: in development
  *
  * ---- input-utils.c ----
  * @realloc_g_buff() - input-utils.c | status: finished
  *
  * ---- parser.c ----
- * @extract_commands() - [undefined] > parser.c | status: not started
+ * @extract_commands() - parser.c | status: finished/untested
  *
  * ---- memory-utils.c ----
  * @_realloc() - memory-utils.c | status: finished
@@ -109,10 +111,11 @@ commands_centre *init_commands_centre();
 /* input.c */
 ssize_t _getline(char **linepointer, size_t *n, int fd);
 void prompt(char *s);
+ssize_t get_input(commands_centre *cmd_main);
 /* input-utils.c */
 char *realloc_g_buff(char *s, size_t *size);
 /* parser.c */
-int extract_commands(commands_centre *cmd_main);
+char *extract_commands(commands_centre *cmd_main);
 /* mem-utils.c */
 void *_realloc(void *ptr, size_t size);
 /* string-utils.c */

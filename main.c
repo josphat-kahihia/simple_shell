@@ -18,18 +18,14 @@
 int main(void)
 {
 	commands_centre *cmd_main;
-	char *line;
+	char *token;
 	ssize_t gr;
-	size_t n;
 
 	cmd_main = init_commands_centre();
 	if (cmd_main == NULL)
 		return (-1);
-	line = NULL;
-	cmd_main->cl = &line;
-	n = 0;
 	prompt(NULL);
-	gr = _getline(cmd_main->cl, &n, cmd_main->fd);
+	gr = get_input(cmd_main);
 	while (gr || *cmd_main->cl)
 	{
 		if (_strlen(*cmd_main->cl) == 0)
@@ -38,12 +34,14 @@ int main(void)
 			exit(0); /* EOF encountered */
 		}
 		printf("Input string: start->|%s|<-end\n", *cmd_main->cl);
-		/* extract_commands(cmd_main); execute_commands(cmd_main)*/
+		token = extract_commands(cmd_main);
+		printf("Token received: start->%s|<-end\n", token);
+		/* execute_commands(cmd_main); */
 		*cmd_main->cl = NULL; /* reset for EOF logic to work */
 		prompt(NULL);
-		gr = _getline(cmd_main->cl, &n, cmd_main->fd);
+		gr = get_input(cmd_main);
 	}
 	if (gr < 0 && !(*cmd_main->cl))
-		exit(-1); /* Problem with read or the function itself */
+		exit(-1); /* Problem with read/the getline function itself */
 	return (0);
 }

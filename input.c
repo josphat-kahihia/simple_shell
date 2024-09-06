@@ -77,3 +77,25 @@ ssize_t _getline(char **lp, size_t *n, int fd)
 		return (rv);
 	return (-1);
 }
+
+/**
+ * get_input - wrapper function for _getline
+ * @cmd_main: struct commands_centre
+ * @line: Placeholder required to function
+ * @n: buffer size
+ * @gr: _getline return
+ *
+ * Return: gr
+ */
+ssize_t get_input(commands_centre *cmd_main)
+{
+	char *line;
+	size_t n;
+	ssize_t gr;
+
+	line = NULL;
+	cmd_main->cl = &line;
+	n = 0;
+	gr = _getline(cmd_main->cl, &n, cmd_main->fd);
+	return (gr);
+}
