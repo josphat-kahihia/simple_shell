@@ -2,6 +2,9 @@
 
 /**
  * main - init, run and control the shell
+ * @ac: ac
+ * @argv: shell's args
+ * @env: inherited env
  * @line: Placeholder var for _getline to work correctly
  * @gr: _getline's return value
  * @n: The bytes specifier for _getline
@@ -15,28 +18,31 @@
  *
  * Return: 0 on success, -1 on failure.
  */
-int main(void)
+int main(int ac, char **argv, char **env)
 {
 	commands_centre *cmd_main;
 	char *token;
 	ssize_t gr;
 
+	if (ac > 1)
+	{
+		printf("%s: Not yet implemented.\n", argv[0]);
+		exit(-1);
+	}
 	cmd_main = init_commands_centre();
 	if (cmd_main == NULL)
 		return (-1);
 	prompt(NULL);
 	gr = get_input(cmd_main);
-	while (gr || *cmd_main->cl)
+	while (gr > 0 || *cmd_main->cl)
 	{
 		if (_strlen(*cmd_main->cl) == 0)
 		{
 			write(STDOUT_FILENO, "\n", 2);
 			exit(0); /* EOF encountered */
 		}
-		printf("Input string: start->|%s|<-end\n", *cmd_main->cl);
 		token = extract_commands(cmd_main);
-		printf("Token received: start->%s|<-end\n", token);
-		/* execute_commands(cmd_main); */
+		execute_commands(token, env);
 		*cmd_main->cl = NULL; /* reset for EOF logic to work */
 		prompt(NULL);
 		gr = get_input(cmd_main);

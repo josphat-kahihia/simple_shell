@@ -1,12 +1,15 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-/* Standard libraries */
+/* ========================= Standard libraries ============================ */
 #include <stdlib.h>
 #include <stdio.h> /* For debugging printfs. Will remove later */
 #include <unistd.h>
 #include <string.h> /* For strtok, will remove later */
+#include <sys/wait.h> /* For waitpid() */
 
+
+/* ========================= Structs and Typedefs ========================== */
 /**
  * struct command_string - a typedef'd struct for holding a single command.
  * @argv: Array of it's arguments.
@@ -27,6 +30,51 @@ typedef struct command_string
 	struct command_string *next;
 	struct command_string *prev;
 } command;
+
+/**
+ * struct variables - The Shell Variables
+ * @string: The "key=value" string
+ * @key: The "key"
+ * @value: The "value"
+ * @next: The next variable
+ */
+typedef struct variables
+{
+	char *string;
+	char *key;
+	char *value;
+	struct variables *next;
+} variables;
+
+/**
+ * env_var - the environment variables
+ */
+typedef variables env_var;
+
+/**
+ * shell_var - the shell variables
+ *
+ * Examples: $$, $?, user added/defined vars eg $HELLO
+ */
+typedef variables shell_var;
+
+/**
+ * alias_var - the aliases
+ *
+ * Note: The aliases self destruct i.e clear on closing the shell
+ */
+typedef variables alias_var;
+
+/**
+ * struct path_variables - splitted path names
+ * @path_name: An individual path
+ * @next: The next pathname (linked list)
+ */
+typedef struct path_variables
+{
+	char *path_name;
+	struct path_variables *next;
+} path_var;
 
 /**
  * struct commands_centre - a typedef'd struct for managing all commands.
@@ -52,6 +100,31 @@ typedef struct commands_centre
 } commands_centre;
 
 /**
+ * struct variables_centre - a typedef'd struct for managing all variables
+ * @env_head: Pointer to the first env var
+ * @env_end: Pointer to the last env var
+ * @shell_head: Pointer to the first shell var, presumably `$$`
+ * @shell_end: Pointer to the last shell var
+ * @alias_head: Pointer to the first alias var
+ * @path_head: Pointer to first pathname, obtained from env
+ * @cwd: path of the current working directory
+ * @owd: path of the most recent working directory
+ */
+typedef struct variables_centre
+{
+	env_var **env_head;
+	env_var **env_end;
+	shell_var **shell_head;
+	shell_var **shell_end;
+	alias_var **alias_head;
+	alias_var **alias_end;
+	path_var **path_head;
+	char *cwd;
+	char *owd;
+} variables_centre;
+
+/* ===================== function declarations ==============================*/
+/**
  * Function Declarations - All function prototypes used in this program
  *
  * Purpose: This comment block mentions where the functions have been defined,
@@ -74,7 +147,7 @@ typedef struct commands_centre
  * ============================================================================
  *
  * ---- main.c ----
- * @main(*) - main.c | status: in development
+ * @main(*) - main.c | status: CI/CD - in development
  *
  * ---- init.c ----
  * @init_commands_centre() - init.c | status: finished
@@ -88,7 +161,10 @@ typedef struct commands_centre
  * @realloc_g_buff() - input-utils.c | status: finished
  *
  * ---- parser.c ----
- * @extract_commands() - parser.c | status: finished/untested
+ * @extract_commands() - parser.c | status: CI/CD - finished
+ *
+ * ---- exec.c ----
+ * @execute_commands() - exec.c | status: in development
  *
  * ---- memory-utils.c ----
  * @_realloc() - memory-utils.c | status: finished
@@ -97,15 +173,15 @@ typedef struct commands_centre
  * @_strlen() - string-utils.c | status: finished
  * @get_substring() - string-utils.c | finished
  * @_strcpy() - string-utils.c | status: finished
- * @_strconcat() - string-utils.c | status: not started
+ * @_strconcat() - string-utils.c | status: finished
  *
  * ============================================================================
  *
  * Return: nothing - literally here to appease betty
  */
-int main(void);
+/* int main(void); */
 /* int main(int ac, char **argv); */
-/* int main(int ac, char **argv, char **env); */
+int main(int ac, char **argv, char **env);
 /* init.c */
 commands_centre *init_commands_centre();
 /* input.c */
@@ -116,6 +192,8 @@ ssize_t get_input(commands_centre *cmd_main);
 char *realloc_g_buff(char *s, size_t *size);
 /* parser.c */
 char *extract_commands(commands_centre *cmd_main);
+/* exec.c */
+int execute_commands(char *token, char **env);
 /* mem-utils.c */
 void *_realloc(void *ptr, size_t size);
 /* string-utils.c */
