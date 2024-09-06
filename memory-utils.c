@@ -32,7 +32,7 @@ void *_realloc(void *ptr, size_t size)
 	printf("we got here\n");
 	p = ptr;
 	np = newptr;
-	printf("p: %s\n",p);
+	printf("p: %s\n", p);
 	while (np <= (newptr + --size))
 	{
 		*np = *p;
