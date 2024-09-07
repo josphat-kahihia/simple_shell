@@ -13,12 +13,12 @@ void *_realloc(void *ptr, size_t size)
 	char *p;
 	char *np;
 
-	if (ptr == NULL && size > 0)
+	if (ptr == NULL && size > 0) /* similar to malloc() */
 	{
 		newptr = malloc(size);
-		return (NULL);/* No need to check if == NULL, sends itself*/
+		return (newptr);/* No need to check if == NULL, sends itself*/
 	}
-	if (ptr != NULL && size == 0)
+	if (ptr != NULL && size == 0) /* similar to calling free() */
 	{
 		free(ptr);
 		return (NULL);
@@ -26,7 +26,6 @@ void *_realloc(void *ptr, size_t size)
 	newptr = malloc(sizeof(char) * size);
 	if (newptr == NULL)
 		return (NULL);
-	/* printf("we got here\n"); Debug statement */
 	p = ptr;
 	np = newptr;
 	printf("p: %s\n", p);

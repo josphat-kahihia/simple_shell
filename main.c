@@ -22,10 +22,7 @@ int main(int ac, __attribute__((unused))char **argv, char **env)
 	ssize_t gr;
 
 	if (ac > 1)
-	{
-		/* printf("%s: Not yet implemented.\n", argv[0]; */
-		exit(-1);
-	}
+		exit(-1); /* Not implemented yet */
 	cmd_main = init_commands_centre(argv[0]);
 	if (cmd_main == NULL)
 		return (-1);
