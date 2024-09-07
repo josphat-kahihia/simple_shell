@@ -81,6 +81,8 @@ typedef struct path_variables
  * @head: The first command string.
  * @end: The last command string, for efficiency purposes.
  * @filename: The name of the file if (mode == 2), null if otherwise.
+ * @execname: argv[0] of the shell executable
+ * @exec_error: ("%s:", argv[0])
  * @cl: The literal input string from getline() - the command line.
  * @lc: The current line of execution - line count.
  * @cc: The number of commands in the command_line - command count.
@@ -93,6 +95,8 @@ typedef struct commands_centre
 	command **end;
 	char **cl;
 	char *filename;
+	char *execname;
+	char *exec_error;
 	int lc;
 	int cc;
 	int fd;
@@ -110,6 +114,8 @@ typedef struct commands_centre
  * @path_head: Pointer to first pathname, obtained from env
  * @cwd: path of the current working directory
  * @owd: path of the most recent working directory
+ * @execname: argv[0] of the shell executable
+ * @exec_error: ("%s:", argv[0])
  */
 typedef struct variables_centre
 {
@@ -122,6 +128,8 @@ typedef struct variables_centre
 	path_var **path_head;
 	char *cwd;
 	char *owd;
+	char *execname;
+	char *exec_error;
 } variables_centre;
 
 /* ===================== function declarations ==============================*/
@@ -169,6 +177,10 @@ typedef struct variables_centre
  * ---- exec.c ----
  * @execute_commands() - exec.c | status: in development
  *
+ * ---- exec-utils.c ----
+ * @err_string() - exec-utils.c | status: in development
+ * @set_argv() - exec-utils.c | status: in development
+ *
  * ---- memory-utils.c ----
  * @_realloc() - memory-utils.c | status: finished
  *
@@ -184,7 +196,7 @@ typedef struct variables_centre
 /* int main(int ac, char **argv); */
 int main(int ac, char **argv, char **env);
 /* init.c */
-commands_centre *init_commands_centre();
+commands_centre *init_commands_centre(char *execname);
 /* input.c */
 ssize_t _getline(char **linepointer, size_t *n, int fd);
 void prompt(char *s);
@@ -196,7 +208,10 @@ ssize_t _getline_setter(char *mark, char *i, ssize_t rv, ssize_t br);
 /* parser.c */
 char *extract_commands(commands_centre *cmd_main);
 /* exec.c */
-int execute_commands(char *token, char **env);
+int execute_commands(commands_centre *cmd_main, char *token, char **env);
+/* exec-utils.c */
+char *err_string(commands_centre *cmd_main, char *token);
+char **set_argv(char *token);
 /* mem-utils.c */
 void *_realloc(void *ptr, size_t size);
 /* string-utils.c */

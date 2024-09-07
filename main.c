@@ -26,7 +26,7 @@ int main(int ac, __attribute__((unused))char **argv, char **env)
 		/* printf("%s: Not yet implemented.\n", argv[0]; */
 		exit(-1);
 	}
-	cmd_main = init_commands_centre();
+	cmd_main = init_commands_centre(argv[0]);
 	if (cmd_main == NULL)
 		return (-1);
 	prompt(NULL);
@@ -38,8 +38,11 @@ int main(int ac, __attribute__((unused))char **argv, char **env)
 			write(STDOUT_FILENO, "\n", 2);
 			exit(0); /* EOF encountered */
 		}
-		token = extract_commands(cmd_main);
-		execute_commands(token, env);
+		if (_strlen(*cmd_main->cl) > 1)
+		{
+			token = extract_commands(cmd_main);
+			execute_commands(cmd_main, token, env);
+		}
 		*cmd_main->cl = NULL; /* reset for EOF logic to work */
 		prompt(NULL);
 		gr = get_input(cmd_main);

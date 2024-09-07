@@ -2,6 +2,7 @@
 
 /**
  * execute_commands - Run the commands
+ * @cmd_main: [temporary] holds the exec name
  * @token: current command
  * @env: environ
  *
@@ -43,46 +44,45 @@
  *
  * Return: the status code if failure, 0 on successs
  */
-int execute_commands(char *token, char **env)
+int execute_commands(commands_centre *cmd_main, char *token, char **env)
 {
 	char **argv;
 	pid_t pid;
 	pid_t pid2;
+	char *err;
 	int s;
 
+	err = err_string(cmd_main, token);
+	if (err == NULL)
+		return (-1);
 	pid = fork();
 	if (pid == -1) /* fork failed, in parent (shell) */
 	{
-		printf("argv[0]: fork: {perror()}");
+		perror(cmd_main->execname);
 		return (-1);
 	}
 	if (pid == 0) /* Inside the child */
 	{
-		argv = malloc(sizeof(char *) * 2); /* Only one token rn */
+		argv = set_argv(token); /* Only one token rn */
 		if (argv == NULL)
-			_exit(-1); /* Since return would go to child's main*/
-		argv[0] = malloc(sizeof(char) * (_strlen(token) + 1));
-		argv[0] = _strcpy(argv[0], token);
-		argv[1] = NULL;
-		if (argv[0] == NULL)
-			_exit(-1);
+			_exit(-1); /* Since return would go to child's main */
 		if (execve(argv[0], argv, env) == -1)
 		{
-			perror("./sh"); /* should actually be shell's argv[0] */
+			perror(err); /* should actually be shell's argv[0] */
 			_exit(-1);
 		}
 	}
-	else if (pid > 0) /* Inside the parent (shell) */
+	/* Inside the parent (shell) */
+	pid2 = waitpid(pid, &s, 0);
+	if (pid != pid2)
 	{
-		pid2 = waitpid(pid, &s, 0);
-		if (pid != pid2)
-			perror("Wut Just Happened?");
-		if (WIFEXITED(s))
-		{
-			s = WEXITSTATUS(s);
-			/* printf("%s _exited success with %i\n", token, s); */
-			return (s);
-		}
-	} /* technically, this can be outside the else block */
+		perror("Wut Just Happened?");
+		exit(-1);
+	}
+	if (WIFEXITED(s))
+	{
+		s = WEXITSTATUS(s);
+		return (s); /* The exit status */
+	}
 	return (-1); /* Can only get here as a result of an error */
 }
