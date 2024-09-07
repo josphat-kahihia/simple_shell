@@ -15,7 +15,7 @@
  *
  * Return: 0 on success, -1 on failure.
  */
-int main(int ac, char **argv, char **env)
+int main(int ac, __attribute__((unused))char **argv, char **env)
 {
 	commands_centre *cmd_main;
 	char *token;
