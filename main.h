@@ -106,6 +106,7 @@ typedef struct commands_centre
  * @shell_head: Pointer to the first shell var, presumably `$$`
  * @shell_end: Pointer to the last shell var
  * @alias_head: Pointer to the first alias var
+ * @alias_end: Pointer to the last alias var
  * @path_head: Pointer to first pathname, obtained from env
  * @cwd: path of the current working directory
  * @owd: path of the most recent working directory
@@ -124,7 +125,7 @@ typedef struct variables_centre
 } variables_centre;
 
 /* ===================== function declarations ==============================*/
-/**
+/*
  * Function Declarations - All function prototypes used in this program
  *
  * Purpose: This comment block mentions where the functions have been defined,
@@ -159,6 +160,8 @@ typedef struct variables_centre
  *
  * ---- input-utils.c ----
  * @realloc_g_buff() - input-utils.c | status: finished
+ * @_getline_helper() - input-utils.c | status: finished/untested
+ * @_getline_setter() - input-utils.c | status: finished/untested
  *
  * ---- parser.c ----
  * @extract_commands() - parser.c | status: CI/CD - finished
@@ -176,8 +179,6 @@ typedef struct variables_centre
  * @_strconcat() - string-utils.c | status: finished
  *
  * ============================================================================
- *
- * Return: nothing - literally here to appease betty
  */
 /* int main(void); */
 /* int main(int ac, char **argv); */
@@ -190,6 +191,8 @@ void prompt(char *s);
 ssize_t get_input(commands_centre *cmd_main);
 /* input-utils.c */
 char *realloc_g_buff(char *s, size_t *size);
+char *_getline_helper(char **lp, char *i, char *mark);
+ssize_t _getline_setter(char *mark, char *i, ssize_t rv, ssize_t br);
 /* parser.c */
 char *extract_commands(commands_centre *cmd_main);
 /* exec.c */

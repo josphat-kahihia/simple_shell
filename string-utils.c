@@ -94,7 +94,6 @@ char *get_substring(char *start, char *end)
  * _strconcat - Alternate implementation of strcat
  * @dest: The altered string
  * @src: The source string
- * @p: Pointer to start of copying
  *
  * Return: Pointer to dest
  */

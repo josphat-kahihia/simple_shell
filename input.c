@@ -16,10 +16,6 @@ void prompt(char *s)
  * @lp: The buffer
  * @n: Pointer to size of the buffer
  * @fd: The file descriptor
- * @mark: Pointer to the last-written-to-byte on lp
- * @i: Pointer that scans the written lp
- * @br: read()'s byte count
- * @rv: The total byte counter
  *
  * Description: This function is similar to getline() (see man getline()),
  * with the major difference being instead of using a `FILE *` struct, we
@@ -36,8 +32,7 @@ ssize_t _getline(char **lp, size_t *n, int fd)
 
 	if (lp == NULL)
 		return (-2);
-	if (*n < 1024 || *lp == NULL)
-		*lp = realloc_g_buff(*lp, n); /* sets the default n to 1024 */
+	*lp = realloc_g_buff(*lp, n); /* sets the default n to 1024 */
 	if (*lp == NULL)
 		return (-1);
 	i = *lp;
@@ -49,15 +44,9 @@ ssize_t _getline(char **lp, size_t *n, int fd)
 		mark += (int)br;
 		while (*i != '\n' && i++ <= mark)
 			;
-		if (*i == '\n') /* A conventional line, ending with \n*/
+		if ((*i == '\n') || (*i != '\n' && *mark != '\n'))
 		{
-			*lp = get_substring(*lp, i);
-			return (br);
-		}
-		else if (*i != '\n' && *mark != '\n') /* EOF with content */
-		{
-			*lp = get_substring(*lp, mark);
-			write(STDOUT_FILENO, "\n", 2);
+			*lp = _getline_helper(lp, i, mark);
 			return (br);
 		}
 		if (br > ((ssize_t) *n - (br / 3)))
@@ -67,9 +56,7 @@ ssize_t _getline(char **lp, size_t *n, int fd)
 				return (-1);
 			mark = *lp + (int)br;
 		}
-		mark++;
-		i = mark;
-		rv += br;
+		rv = _getline_setter(mark, i, rv, br);
 	}
 	if (br <= 0 && rv == 0) /* EOF without content, problem with read() */
 		return (-1);
@@ -81,9 +68,6 @@ ssize_t _getline(char **lp, size_t *n, int fd)
 /**
  * get_input - wrapper function for _getline
  * @cmd_main: struct commands_centre
- * @line: Placeholder required to function
- * @n: buffer size
- * @gr: _getline return
  *
  * Return: gr
  */

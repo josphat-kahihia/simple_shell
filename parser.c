@@ -3,7 +3,6 @@
 /**
  * extract_commands - extract the token
  * @cmd_main: commands centre
- * @token: a token
  *
  * Return: Pointer to the token
  */

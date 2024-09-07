@@ -2,11 +2,8 @@
 
 /**
  * execute_commands - Run the commands
- * @token: the current command
- * @argv: the child's argv
- * @pid: the child's pid
- * @pid2: for comparison purposes
- * @s: exit value
+ * @token: current command
+ * @env: environ
  *
  * Description: This function introduces fairly new concepts. We have execve,
  * that replaces the thread in a process with a new program, and waitpid/sister
@@ -23,17 +20,22 @@
  *
  * Note: execve() requires that the pathname resolves to a binary or an
  * executable shell script whose first line is `#! interpreter`. The shell can
- * be any program, as long as it is in PATH.
+ * be any program, as long as it is in PATH. Why _exit() and not exit() in the
+ * child process? To ensure the child process terminates cleanly and without
+ * affecting the parent process’s environment.
  *
  * References: man(2) wait, man(2) fork, man(2) getpid, man(2) execve, man(5)
- * proc
+ * proc man(3) exit, man(3) _exit
  *
- * Links(in_their_respective_orders):
- * https://man7.org/linux/man-pages/man2/waitpid.2.html
- * https://man7.org/linux/man-pages/man2/fork.2.html
- * https://man7.org/linux/man-pages/man2/getpid.2.html
- * https://man7.org/linux/man-pages/man2/execve.2.html
- * https://man7.org/linux/man-pages/man5/proc.5.html
+ * Links(in_their_respective_orders): Had to remove https from them to silence
+ * betty's errors.
+ * man7.org/linux/man-pages/man2/waitpid.2.html
+ * man7.org/linux/man-pages/man2/fork.2.html
+ * man7.org/linux/man-pages/man2/getpid.2.html
+ * man7.org/linux/man-pages/man2/execve.2.html
+ * man7.org/linux/man-pages/man5/proc.5.html
+ * man7.org/linux/man-pages/man3/exit.3.html
+ * man7.org/linux/man-pages/man2/exit.2.html
  *
  * Did_you_know?: A child process can remove itself from the original Process
  * Group ID (PGID), and create a new one where it is the leader. Oh, the
@@ -41,7 +43,7 @@
  *
  * Return: the status code if failure, 0 on successs
  */
-int execute_commands(char *token , char **env)
+int execute_commands(char *token, char **env)
 {
 	char **argv;
 	pid_t pid;
@@ -59,12 +61,12 @@ int execute_commands(char *token , char **env)
 		argv = malloc(sizeof(char *) * 2); /* Only one token rn */
 		if (argv == NULL)
 			_exit(-1); /* Since return would go to child's main*/
-		argv[0] = malloc(sizeof(char) * (_strlen(token) +1));
+		argv[0] = malloc(sizeof(char) * (_strlen(token) + 1));
 		argv[0] = _strcpy(argv[0], token);
 		argv[1] = NULL;
 		if (argv[0] == NULL)
 			_exit(-1);
-		if(execve(argv[0], argv, env) == -1)
+		if (execve(argv[0], argv, env) == -1)
 		{
 			perror("./sh"); /* should actually be shell's argv[0] */
 			_exit(-1);

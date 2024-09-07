@@ -5,9 +5,6 @@
  * @ac: ac
  * @argv: shell's args
  * @env: inherited env
- * @line: Placeholder var for _getline to work correctly
- * @gr: _getline's return value
- * @n: The bytes specifier for _getline
  *
  * Description: The main function first initialises the variables 'centres'
  * required to run the shell, then checks the mode of execution, and handles
@@ -26,7 +23,7 @@ int main(int ac, char **argv, char **env)
 
 	if (ac > 1)
 	{
-		printf("%s: Not yet implemented.\n", argv[0]);
+		/* printf("%s: Not yet implemented.\n", argv[0]; */
 		exit(-1);
 	}
 	cmd_main = init_commands_centre();
