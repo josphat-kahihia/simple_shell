@@ -3,7 +3,7 @@
 /**
  * execute_commands - Run the commands
  * @cmd_main: [temporary] holds the exec name
- * @token: current command
+ * @tokens: execve()'s argv
  * @env: environ
  *
  * Description: This function introduces fairly new concepts. We have execve,
@@ -44,7 +44,7 @@
  *
  * Return: the status code if failure, 0 on successs
  */
-int execute_commands(commands_centre *cmd_main, char *token, char **env)
+int execute_commands(commands_centre *cmd_main, char **tokens, char **env)
 {
 	char **argv;
 	pid_t pid;
@@ -52,7 +52,7 @@ int execute_commands(commands_centre *cmd_main, char *token, char **env)
 	char *err;
 	int s;
 
-	err = err_string(cmd_main, token);
+	err = err_string(cmd_main, tokens[0]);
 	if (err == NULL)
 		return (-1);
 	pid = fork();
@@ -63,12 +63,10 @@ int execute_commands(commands_centre *cmd_main, char *token, char **env)
 	}
 	if (pid == 0) /* Inside the child */
 	{
-		argv = set_argv(token); /* Only one token rn */
-		if (argv == NULL)
-			_exit(-1); /* Since return would go to child's main */
+		argv = tokens;
 		if (execve(argv[0], argv, env) == -1)
 		{
-			perror(err); /* should actually be shell's argv[0] */
+			perror(err); /* Shell's argv[0] */
 			_exit(-1);
 		}
 	}
