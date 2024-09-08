@@ -206,9 +206,9 @@ char *realloc_g_buff(char *s, size_t *size);
 char *_getline_helper(char **lp, char *i, char *mark);
 ssize_t _getline_setter(char *mark, char *i, ssize_t rv, ssize_t br);
 /* parser.c */
-char *extract_commands(commands_centre *cmd_main);
+char **extract_commands(commands_centre *cmd_main);
 /* exec.c */
-int execute_commands(commands_centre *cmd_main, char *token, char **env);
+int execute_commands(commands_centre *cmd_main, char **tokens, char **env);
 /* exec-utils.c */
 char *err_string(commands_centre *cmd_main, char *token);
 char **set_argv(char *token);
