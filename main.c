@@ -18,7 +18,7 @@
 int main(int ac, __attribute__((unused))char **argv, char **env)
 {
 	commands_centre *cmd_main;
-	char *token;
+	char **tokens;
 	ssize_t gr;
 
 	if (ac > 1)
@@ -37,8 +37,8 @@ int main(int ac, __attribute__((unused))char **argv, char **env)
 		}
 		if (_strlen(*cmd_main->cl) > 1)
 		{
-			token = extract_commands(cmd_main);
-			execute_commands(cmd_main, token, env);
+			tokens = extract_commands(cmd_main);
+			execute_commands(cmd_main, tokens, env);
 		}
 		*cmd_main->cl = NULL; /* reset for EOF logic to work */
 		prompt(NULL);
